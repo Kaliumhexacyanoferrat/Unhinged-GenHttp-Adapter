@@ -36,5 +36,6 @@ internal static class Program
     private static InlineBuilder CreateApi() => 
         Inline
             .Create() 
-            .Get("plaintext", () => "Hello, World!");
+            .Get("plaintext", () => "Hello, World!")
+            .Get("json", () => "Hello, World!");
 }

@@ -1,5 +1,9 @@
+using System.Diagnostics.Contracts;
+using System.Runtime.CompilerServices;
+using Adapter.Protocol;
 using Adapter.Server;
 using Adapter.Types;
+using Adapter.Utils;
 using GenHTTP.Api.Content;
 using GenHTTP.Api.Infrastructure;
 using GenHTTP.Api.Protocol;
@@ -21,8 +25,6 @@ public static class Adapter
     private static async ValueTask GenHttpStaticHandler(Connection connection, IHandler handler, IServerCompanion? companion)
     {
         var server = new ImplicitServer(handler, companion);
-
-        var registeredPath = "/plaintext";
 
         try
         {
@@ -47,12 +49,39 @@ public static class Adapter
 
     private static void MapResponse(IResponse response, Connection connection)
     {
-        connection.WriteBuffer.WriteUnmanaged("HTTP/1.1 200 OK\r\n"u8 +
-                                              "Server: W\r\n"u8 +
-                                              "Content-Type: text/plain\r\n"u8 +
-                                              //"Content-Length: 13\r\n\r\nHello, World!"u8);
-                                              "Content-Length: 13\r\n"u8);
+        connection.WriteBuffer.WriteUnmanaged(HttpStatusLines.Lines[response.Status.RawStatus]);
+        connection.WriteBuffer.WriteUnmanaged(ServerHeaderName);
+        
+        foreach (var header in response.Headers)
+        {
+            connection.WriteBuffer.WriteHeaderUnmanaged(header);
+        }
+
+        if (response.Modified != null)
+        {
+            connection.WriteBuffer.WriteHeaderUnmanaged("Last-Modified", response.Modified.Value.ToUniversalTime().ToString("r"));
+        }
+
+        if (response.Expires != null)
+        {
+            connection.WriteBuffer.WriteHeaderUnmanaged("Expires", response.Expires.Value.ToUniversalTime().ToString("r"));
+        }
+
+        if (response.HasCookies)
+        {
+            foreach (var cookie in response.Cookies)
+            {
+                connection.WriteBuffer.WriteHeaderUnmanaged("Set-Cookie", $"{cookie.Key}={cookie.Value.Value}");
+            }
+        }
+
+        if (response.ContentLength is not null)
+        {
+            connection.WriteBuffer.WriteHeaderUnmanaged("Content-Length", response.ContentLength.ToString());
+        }
+        
         connection.WriteBuffer.WriteUnmanaged(DateHelper.HeaderBytes);
+        
         connection.WriteBuffer.WriteUnmanaged("Hello, World!"u8);
     }
 
@@ -66,6 +95,19 @@ public static class Adapter
         }
     }
     
+    [Pure]
     private static Action<Connection> RequestHandler(IHandler handler, IServerCompanion? companion) =>
-        conn => GenHttpStaticHandler(conn, handler, companion);
+        conn => _ = GenHttpStaticHandler(conn, handler, companion);
+    
+    
+    private static ReadOnlySpan<byte> ServerHeaderName => "Server: Urn\n"u8;
+    private static ReadOnlySpan<byte> ContentTypeHeader => "Content-Type: "u8;
+    private static ReadOnlySpan<byte> ContentLengthHeader => "Content-Length: "u8;
+    private static ReadOnlySpan<byte> ContentEncodingHeader => "Content-Encoding: "u8;
+    private static ReadOnlySpan<byte> TransferEncodingHeader  => "Transfer-Encoding: "u8;
+    private static ReadOnlySpan<byte> TransferEncodingChunkedHeader  => "Transfer-Encoding: chunked\r\n"u8;
+    private static ReadOnlySpan<byte> LastModifiedHeader => "Last-Modified: "u8;
+    private static ReadOnlySpan<byte> ExpiresHeader => "Expires: "u8;
+    private static ReadOnlySpan<byte> ConnectionHeader => "Connection: "u8;
+    private static ReadOnlySpan<byte> DateHeader => "Date: "u8;
 }

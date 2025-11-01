@@ -17,7 +17,7 @@ public sealed class ImplicitServer : IServer
     {
         get
         {
-            // todo: is there something like development mode in wired?
+            // todo: is there something like development mode in unhinged?
             var env = Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT");
             return string.Compare(env, "Development", StringComparison.OrdinalIgnoreCase) == 0;
         }
@@ -49,7 +49,7 @@ public sealed class ImplicitServer : IServer
 
     public ValueTask DisposeAsync() => new();
 
-    public ValueTask StartAsync() => throw new InvalidOperationException("Server is managed by WiredIO and cannot be started");
+    public ValueTask StartAsync() => throw new InvalidOperationException("Server is managed by Unhinged and cannot be started");
 
     #endregion
 

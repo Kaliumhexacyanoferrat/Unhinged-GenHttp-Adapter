@@ -52,6 +52,8 @@ public sealed class Headers : IHeaderCollection
     public Headers(Connection connection)
     {
         Connection = connection;
+
+        HeadersInternal = new PooledDictionary<string, string>();
     }
 
     #endregion
