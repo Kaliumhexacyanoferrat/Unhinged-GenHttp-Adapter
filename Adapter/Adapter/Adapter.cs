@@ -1,6 +1,5 @@
 using System.Buffers.Text;
 using System.Diagnostics.Contracts;
-using System.Runtime.CompilerServices;
 using Adapter.Protocol;
 using Adapter.Server;
 using Adapter.Types;
@@ -25,7 +24,7 @@ public static class Adapter
         return builder;
     }
 
-    private static async ValueTask GenHttpStaticHandler(Connection connection, IHandler handler, IServerCompanion? companion)
+    private static async ValueTask GenHttpAsyncStaticHandler(Connection connection, IHandler handler, IServerCompanion? companion)
     {
         var server = new ImplicitServer(handler, companion);
 
@@ -37,7 +36,7 @@ public static class Adapter
 
             if (response != null)
             {
-                MapResponse(response, connection);
+                await MapResponse(response, connection);
 
                 server.Companion?.OnRequestHandled(request, response);
             }
@@ -58,6 +57,11 @@ public static class Adapter
         foreach (var header in response.Headers)
         {
             connection.WriteBuffer.WriteHeaderUnmanaged(header);
+        }
+
+        if (response.ContentType is not null)
+        {
+            connection.WriteBuffer.WriteHeaderUnmanaged(ContentTypeHeader, response.ContentType.RawType);
         }
 
         if (response.Modified != null)
@@ -95,10 +99,17 @@ public static class Adapter
         
         // TODO: Improve performance here, cache or something, can't be creating and disposing streams every request?
         // TODO: Maybe consider using [ThreadStatic]
-        await using var stream = connection.WriteBuffer.AsUnhingedStream();
-        await response.Content!.WriteAsync(stream, BufferSize);
         
-        //connection.WriteBuffer.WriteUnmanaged("Hello, World!"u8);
+        if (response.ContentLength is null)
+        {
+            await using var stream = new ChunkedStream(connection.WriteBuffer.AsUnhingedStream());
+            await response.Content!.WriteAsync(stream, BufferSize);
+            await stream.FinishAsync();
+        }
+        else
+        {
+            await response.Content!.WriteAsync(connection.WriteBuffer.AsUnhingedStream(), BufferSize);
+        }
     }
 
     private static void AdvanceTo(Request request, string registeredPath)
@@ -112,11 +123,11 @@ public static class Adapter
     }
     
     [Pure]
-    private static Action<Connection> RequestHandler(IHandler handler, IServerCompanion? companion) =>
-        conn => _ = GenHttpStaticHandler(conn, handler, companion);
+    private static Func<Connection, ValueTask> RequestHandler(IHandler handler, IServerCompanion? companion) =>
+        async conn => await GenHttpAsyncStaticHandler(conn, handler, companion);
     
     
-    private static ReadOnlySpan<byte> ServerHeaderName => "Server: Urn\n"u8;
+    private static ReadOnlySpan<byte> ServerHeaderName => "Server: U\r\n"u8;
     private static ReadOnlySpan<byte> ContentTypeHeader => "Content-Type: "u8;
     private static ReadOnlySpan<byte> ContentLengthHeader => "Content-Length: "u8;
     private static ReadOnlySpan<byte> ContentEncodingHeader => "Content-Encoding: "u8;
