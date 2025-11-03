@@ -57,7 +57,7 @@ public sealed class Query : IRequestQuery
     
     private Connection Connection { get; }
     
-    private Dictionary<string, string>? QueryParameters { get; } = null!;
+    private PooledDictionary<string, string>? QueryParameters { get; } = null!;
 
     #endregion
 
@@ -66,14 +66,7 @@ public sealed class Query : IRequestQuery
     public Query(Connection connection)
     {
         Connection = connection;
-        QueryParameters = ExtractQueryParameters(connection);
-    }
-
-    [Pure]
-    private static Dictionary<string, string> ExtractQueryParameters(Connection connection)
-    {
-        //TODO: Extract query parameters from the connection
-        return new Dictionary<string, string>();
+        QueryParameters = connection.H1HeaderData.QueryParameters;
     }
 
     #endregion

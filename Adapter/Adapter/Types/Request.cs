@@ -88,22 +88,20 @@ public sealed class Request : IRequest
     #endregion
 
     #region Initialization
-    
-    // TODO: these should come from the Connection object
-    private const string Get = "GET";
-    private const string Route = "/plaintext";
 
     public Request(IServer server, Connection connection)
     {
         Server = server;
         //InnerRequest = request;
         Connection = connection;
+        
+        
 
         // todo: no API provided by wired
         ProtocolType = HttpProtocol.Http11;
         
-        Method = FlexibleRequestMethod.Get(Get);
-        Target = new RoutingTarget(WebPath.FromString(Route));
+        Method = FlexibleRequestMethod.Get(connection.H1HeaderData.HttpMethod);
+        Target = new RoutingTarget(WebPath.FromString(connection.H1HeaderData.Route));
 
         // TODO: Forwarding not supported
         /*if (request.Headers.TryGetValue("forwarded", out var entry))

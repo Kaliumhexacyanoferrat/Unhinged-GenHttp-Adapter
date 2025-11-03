@@ -7,7 +7,6 @@ namespace Adapter.Types;
 
 public sealed class Headers : IHeaderCollection
 {
-
     #region Get-/Setters
 
     public int Count => HeadersInternal.Count;
@@ -43,7 +42,7 @@ public sealed class Headers : IHeaderCollection
 
     private Connection Connection { get; }
 
-    private PooledDictionary<string, string> HeadersInternal { get; set; }
+    private Unhinged.PooledDictionary<string, string> HeadersInternal { get; set; }
 
     #endregion
 
@@ -53,7 +52,7 @@ public sealed class Headers : IHeaderCollection
     {
         Connection = connection;
 
-        HeadersInternal = new PooledDictionary<string, string>();
+        HeadersInternal = connection.H1HeaderData.Headers;
     }
 
     #endregion
