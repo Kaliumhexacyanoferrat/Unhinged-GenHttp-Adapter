@@ -28,7 +28,6 @@ internal static class Program
             .Map(CreateLayoutBuilder());
         
         var engine = builder.Build();
-        
         engine.Run();
     }
 
