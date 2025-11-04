@@ -43,6 +43,19 @@ Unhinged, by contrast, runs below the managed runtime boundary, owning the entir
 
 # 🚀 Quickstart
 ```cs
+
+using System.Text.Json;
+
+using GenHTTP.Api.Protocol;
+using GenHTTP.Modules.Conversion.Serializers.Json;
+using GenHTTP.Modules.IO;
+using GenHTTP.Modules.Layouting;
+using GenHTTP.Modules.Layouting.Provider;
+using GenHTTP.Modules.Webservices;
+
+using Unhinged;
+using Unhinged.GenHttp.Experimental;
+
 internal static class Program
 {
     public static void Main(string[] args)
