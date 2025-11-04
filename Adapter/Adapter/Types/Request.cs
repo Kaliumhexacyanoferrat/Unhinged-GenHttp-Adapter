@@ -93,6 +93,8 @@ public sealed class Request : IRequest
     {
         Server = server;
         Connection = connection;
+        
+        
 
         // todo: Unhinged only supports Http11
         ProtocolType = HttpProtocol.Http11;

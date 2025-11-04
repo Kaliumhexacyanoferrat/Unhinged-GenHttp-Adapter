@@ -7,7 +7,6 @@ namespace Adapter.Types;
 
 public sealed class Headers : IHeaderCollection
 {
-
     #region Get-/Setters
 
     public int Count => HeadersInternal.Count;
@@ -53,7 +52,6 @@ public sealed class Headers : IHeaderCollection
     {
         Connection = connection;
 
-        //HeadersInternal = new GenHTTP.Engine.Shared.Types.PooledDictionary<string, string>();
         HeadersInternal = connection.H1HeaderData.Headers;
     }
 

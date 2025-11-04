@@ -125,16 +125,6 @@ public static class Adapter
             await response.Content!.WriteAsync(connection.WriteBuffer.AsUnhingedStream(), BufferSize);
         }
     }
-
-    private static void AdvanceTo(Request request, string registeredPath)
-    {
-        var parts = registeredPath.Split('/', StringSplitOptions.RemoveEmptyEntries);
-
-        foreach (var _ in parts)
-        {
-            request.Target.Advance();
-        }
-    }
     
     [Pure]
     private static Func<Connection, ValueTask> RequestHandler(IHandler handler, IServerCompanion? companion) =>
@@ -151,4 +141,13 @@ public static class Adapter
     private static ReadOnlySpan<byte> ExpiresHeader => "Expires: "u8;
     private static ReadOnlySpan<byte> ConnectionHeader => "Connection: "u8;
     private static ReadOnlySpan<byte> DateHeader => "Date: "u8;
+    
+    // Might be useful further on
+    //
+    /*private static void AdvanceTo(Request request, string registeredPath)
+    {
+        var parts = registeredPath.Split('/', StringSplitOptions.RemoveEmptyEntries);
+        foreach (var _ in parts)
+            request.Target.Advance();
+    }*/
 }

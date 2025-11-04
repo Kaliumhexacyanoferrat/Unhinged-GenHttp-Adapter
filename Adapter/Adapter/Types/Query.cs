@@ -57,7 +57,7 @@ public sealed class Query : IRequestQuery
     
     private Connection Connection { get; }
     
-    private PooledDictionary<string, string>? QueryParameters { get; }
+    private PooledDictionary<string, string>? QueryParameters { get; } = null!;
 
     #endregion
 
