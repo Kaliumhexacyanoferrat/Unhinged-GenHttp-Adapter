@@ -7,6 +7,7 @@ using Adapter.Utils;
 using GenHTTP.Api.Content;
 using GenHTTP.Api.Infrastructure;
 using GenHTTP.Api.Protocol;
+using GenHTTP.Engine.Shared.Types;
 using Unhinged;
 
 namespace Adapter;
@@ -24,15 +25,24 @@ public static class Adapter
         return builder;
     }
 
+    //private static bool Flag = false;
+
+    //private static IResponse response;
+
     private static async ValueTask GenHttpAsyncStaticHandler(Connection connection, IHandler handler, IServerCompanion? companion)
     {
         var server = new ImplicitServer(handler, companion);
-
+        
         try
         {
             using var request = new Request(server, connection);
             
             using var response = await handler.HandleAsync(request);
+            /*if (!Flag)
+            {
+                response = await handler.HandleAsync(request);
+                Flag = true;
+            }*/
 
             if (response != null)
             {
@@ -93,6 +103,10 @@ public static class Adapter
             
             connection.WriteBuffer.Advance(written);
             connection.WriteBuffer.Write("\r\n"u8);
+        }
+        else
+        {
+            connection.WriteBuffer.WriteUnmanaged(TransferEncodingChunkedHeader);
         }
         
         connection.WriteBuffer.WriteUnmanaged(DateHelper.HeaderBytes);
