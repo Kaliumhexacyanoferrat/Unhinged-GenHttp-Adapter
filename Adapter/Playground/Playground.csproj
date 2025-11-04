@@ -11,7 +11,7 @@
         <ServerGarbageCollection>true</ServerGarbageCollection>
         <TieredPGO>true</TieredPGO>
 
-        <RuntimeIdentifier>linux-x64</RuntimeIdentifier>
+        <!--<RuntimeIdentifier>linux-x64</RuntimeIdentifier>-->
     </PropertyGroup>
 
     <ItemGroup>

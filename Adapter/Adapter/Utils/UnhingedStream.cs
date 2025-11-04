@@ -12,7 +12,7 @@ public sealed class UnhingedStream : Stream
     public UnhingedStream(IBufferWriter<byte> writer, bool completeOnDispose = false)
     {
         _writer = writer ?? throw new ArgumentNullException(nameof(writer));
-        _completeOnDispose = completeOnDispose; // default: leave writer open
+        _completeOnDispose = completeOnDispose;
     }
 
     public override bool CanRead => false;

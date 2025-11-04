@@ -4,10 +4,6 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Adapter", "Adapter\Adapter.
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Playground", "Playground\Playground.csproj", "{02D942DA-59C2-4E73-98F0-0291C418525C}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Unhinged", "..\..\Unh\Unhinged\Unhinged\Unhinged.csproj", "{E8BD0EB1-4CE5-4AA2-AE72-C4DB44CB2675}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Unhinged.Playground", "..\..\Unh\Unhinged\Unhinged.Playground\Unhinged.Playground.csproj", "{AD1CDFE9-C0AD-422F-90F6-A11C3A61D438}"
-EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -22,13 +18,5 @@ Global
 		{02D942DA-59C2-4E73-98F0-0291C418525C}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{02D942DA-59C2-4E73-98F0-0291C418525C}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{02D942DA-59C2-4E73-98F0-0291C418525C}.Release|Any CPU.Build.0 = Release|Any CPU
-		{E8BD0EB1-4CE5-4AA2-AE72-C4DB44CB2675}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{E8BD0EB1-4CE5-4AA2-AE72-C4DB44CB2675}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{E8BD0EB1-4CE5-4AA2-AE72-C4DB44CB2675}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{E8BD0EB1-4CE5-4AA2-AE72-C4DB44CB2675}.Release|Any CPU.Build.0 = Release|Any CPU
-		{AD1CDFE9-C0AD-422F-90F6-A11C3A61D438}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{AD1CDFE9-C0AD-422F-90F6-A11C3A61D438}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{AD1CDFE9-C0AD-422F-90F6-A11C3A61D438}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{AD1CDFE9-C0AD-422F-90F6-A11C3A61D438}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal

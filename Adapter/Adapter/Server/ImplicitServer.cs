@@ -17,7 +17,7 @@ public sealed class ImplicitServer : IServer
     {
         get
         {
-            // todo: is there something like development mode in unhinged?
+            // todo: is there something like development mode in unhinged? No.
             var env = Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT");
             return string.Compare(env, "Development", StringComparison.OrdinalIgnoreCase) == 0;
         }

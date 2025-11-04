@@ -24,11 +24,7 @@ public static class Adapter
         builder.InjectRequestHandler(RequestHandler(handlerBuilder.Build(), companion));
         return builder;
     }
-
-    //private static bool Flag = false;
-
-    //private static IResponse response;
-
+    
     private static async ValueTask GenHttpAsyncStaticHandler(Connection connection, IHandler handler, IServerCompanion? companion)
     {
         var server = new ImplicitServer(handler, companion);
@@ -38,12 +34,7 @@ public static class Adapter
             using var request = new Request(server, connection);
             
             using var response = await handler.HandleAsync(request);
-            /*if (!Flag)
-            {
-                response = await handler.HandleAsync(request);
-                Flag = true;
-            }*/
-
+            
             if (response != null)
             {
                 await MapResponse(response, connection);

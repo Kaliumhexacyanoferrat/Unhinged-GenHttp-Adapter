@@ -5,12 +5,8 @@
         <ImplicitUsings>enable</ImplicitUsings>
         <Nullable>enable</Nullable>
 
-        <RuntimeIdentifier>linux-x64</RuntimeIdentifier>
+        <!--<RuntimeIdentifier>linux-x64</RuntimeIdentifier>-->
     </PropertyGroup>
-
-    <ItemGroup>
-      <ProjectReference Include="..\..\..\Unh\Unhinged\Unhinged\Unhinged.csproj" />
-    </ItemGroup>
 
     <ItemGroup>
         <PackageReference Include="GenHTTP.Api" Version="9.8.*" />
@@ -19,6 +15,8 @@
         <PackageReference Include="GenHTTP.Modules.ClientCaching" Version="9.8.*" />
         <PackageReference Include="GenHTTP.Modules.Compression" Version="9.8.*" />
         <PackageReference Include="GenHTTP.Engine.Shared" Version="9.8.*" />
+
+        <PackageReference Include="Unhinged" Version="9.0.4" />
     </ItemGroup>
 
 </Project>
