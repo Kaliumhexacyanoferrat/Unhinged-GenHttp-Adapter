@@ -13,9 +13,9 @@
         <RepositoryType>git</RepositoryType>
 
         <PackageId>Unhinged.GenHttp.Experimental</PackageId>
-        <AssemblyVersion>9.8.2</AssemblyVersion>
-        <FileVersion>9.8.2</FileVersion>
-        <Version>9.8.2</Version>
+        <AssemblyVersion>9.8.3</AssemblyVersion>
+        <FileVersion>9.8.3</FileVersion>
+        <Version>9.8.3</Version>
         
         <PackageReadmeFile>README.md</PackageReadmeFile>
         <PackageTags>Unhinged Adapter GenHttp</PackageTags>
@@ -35,7 +35,7 @@
         <PackageReference Include="GenHTTP.Modules.Compression" Version="9.8.*" />
         <PackageReference Include="GenHTTP.Engine.Shared" Version="9.8.*" />
 
-        <PackageReference Include="Unhinged" Version="9.0.5" />
+        <PackageReference Include="Unhinged" Version="9.0.6" />
     </ItemGroup>
 
     <ItemGroup>
