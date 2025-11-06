@@ -1,10 +1,14 @@
 ﻿using System;
 using System.Text.Json;
+using System.Threading.Tasks;
+using GenHTTP.Api.Content.IO;
+using GenHTTP.Api.Infrastructure;
 using GenHTTP.Api.Protocol;
 using GenHTTP.Modules.Conversion.Serializers.Json;
 using GenHTTP.Modules.Functional;
 using GenHTTP.Modules.Functional.Provider;
 using GenHTTP.Modules.IO;
+using GenHTTP.Modules.IO.Strings;
 using GenHTTP.Modules.Layouting;
 using GenHTTP.Modules.Layouting.Provider;
 using GenHTTP.Modules.Webservices;
@@ -36,7 +40,11 @@ internal static class Program
             .Create()
             .AddService<BenchmarkService>("bench")
             .Add("/plaintext", Content.From(Resource.FromString("Hello, World!")))
-            .Add("/json", Content.From(Resource.FromString(JsonSerializer.Serialize(new JsonMessage{ message = "Hello, World!" }))))
+            
+            .Add("/json", Content.From(
+                Resource.FromString(JsonSerializer.Serialize(new JsonMessage{ message = "Hello, World!" }))
+                    .Type(new FlexibleContentType("application/json"))))
+  
             .Add("/api", CreateApi());
     
     private static InlineBuilder CreateApi() => 
@@ -49,20 +57,77 @@ internal static class Program
 public class BenchmarkService
 {
     [ResourceMethod]
-    public async Task<IResponse> Get(IRequest request)
+    public IResponse Get(IRequest request)
     {
-        await Task.Delay(100);
         return request
             .Respond()
-            .Content(new JsonContent(new JsonMessage
-            {
-                message = "Hello, World!"
-            }, JsonSerializerOptions.Default))
+            .Type(new FlexibleContentType("application/json"))
+            .Content(new CustomContent(new JsonMessage{ message = "Hello, World!" }))
             .Build();
     }
+}
+
+public class CustomContent(object data) : IResponseContent
+{
+    public ValueTask<ulong?> CalculateChecksumAsync()
+    {
+        throw new NotImplementedException();
+    }
+
+    public async ValueTask WriteAsync(Stream target, uint bufferSize)
+    {
+        await JsonSerializer.SerializeAsync(target, data, data.GetType(), JsonSerializerOptions.Default);
+    }
+
+    public ulong? Length { get; } = 27;
 }
 
 public class JsonMessage
 {
     public string message { get; set; }
+}
+
+public sealed class JsonResourceBuilder() : IResourceBuilder<JsonResourceBuilder>
+{
+    private string? _Content, _Name;
+
+    private FlexibleContentType? _ContentType;
+
+    private DateTime? _Modified;
+
+    #region Functionality
+
+    public JsonResourceBuilder Content(string content)
+    {
+        _Content = content;
+        return this;
+    }
+
+    public JsonResourceBuilder Name(string name)
+    {
+        _Name = name;
+        return this;
+    }
+
+    public JsonResourceBuilder Type(FlexibleContentType contentType)
+    {
+        _ContentType = contentType;
+        return this;
+    }
+
+    public JsonResourceBuilder Modified(DateTime modified)
+    {
+        _Modified = modified;
+        return this;
+    }
+
+    public IResource Build()
+    {
+        var content = _Content ?? throw new BuilderMissingPropertyException("content");
+
+        return new StringResource(content, _Name, _ContentType, _Modified);
+    }
+
+    #endregion
+
 }

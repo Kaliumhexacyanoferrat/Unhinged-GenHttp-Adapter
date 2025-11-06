@@ -3,8 +3,6 @@ using System.Diagnostics.Contracts;
 using GenHTTP.Api.Content;
 using GenHTTP.Api.Infrastructure;
 using GenHTTP.Api.Protocol;
-using GenHTTP.Engine.Shared.Types;
-using Unhinged;
 using Unhinged.GenHttp.Experimental.Protocol;
 using Unhinged.GenHttp.Experimental.Server;
 using Unhinged.GenHttp.Experimental.Types;
@@ -32,7 +30,7 @@ public static class Adapter
         try
         {
             using var request = new Request(server, connection);
-            
+
             using var response = await handler.HandleAsync(request);
             
             if (response != null)

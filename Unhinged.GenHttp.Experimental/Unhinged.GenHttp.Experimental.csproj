@@ -13,9 +13,9 @@
         <RepositoryType>git</RepositoryType>
 
         <PackageId>Unhinged.GenHttp.Experimental</PackageId>
-        <AssemblyVersion>9.8.1</AssemblyVersion>
-        <FileVersion>9.8.1</FileVersion>
-        <Version>9.8.1</Version>
+        <AssemblyVersion>9.8.2</AssemblyVersion>
+        <FileVersion>9.8.2</FileVersion>
+        <Version>9.8.2</Version>
         
         <PackageReadmeFile>README.md</PackageReadmeFile>
         <PackageTags>Unhinged Adapter GenHttp</PackageTags>
@@ -24,7 +24,7 @@
         <PackageProjectUrl>https://github.com/MDA2AV/Unhinged-GenHttp-Adapter</PackageProjectUrl>
         <RootNamespace>Adapter</RootNamespace>
 
-        <!--<RuntimeIdentifier>linux-x64</RuntimeIdentifier>-->
+        <RuntimeIdentifier>linux-x64</RuntimeIdentifier>
     </PropertyGroup>
 
     <ItemGroup>
@@ -35,7 +35,7 @@
         <PackageReference Include="GenHTTP.Modules.Compression" Version="9.8.*" />
         <PackageReference Include="GenHTTP.Engine.Shared" Version="9.8.*" />
 
-        <PackageReference Include="Unhinged" Version="9.0.4" />
+        <PackageReference Include="Unhinged" Version="9.0.5" />
     </ItemGroup>
 
     <ItemGroup>

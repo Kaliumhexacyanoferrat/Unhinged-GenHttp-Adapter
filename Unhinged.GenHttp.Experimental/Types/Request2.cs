@@ -2,11 +2,10 @@ using GenHTTP.Api.Infrastructure;
 using GenHTTP.Api.Protocol;
 using GenHTTP.Api.Routing;
 using GenHTTP.Engine.Shared.Types;
-using Unhinged;
 
 namespace Unhinged.GenHttp.Experimental.Types;
 
-public sealed class Request : IRequest
+public sealed class Request2 : IRequest
 {
     private RequestProperties? _Properties;
 
@@ -25,19 +24,19 @@ public sealed class Request : IRequest
         get { return _Properties ??= new RequestProperties(); }
     }
 
-    public IServer Server { get; }
+    public IServer Server { get; private set; }
 
     public IEndPoint EndPoint => throw new InvalidOperationException("EndPoint is not available as it is managed by Unhinged");
 
-    public IClientConnection Client { get; }
+    public IClientConnection Client { get; private set; }
 
-    public IClientConnection LocalClient { get; }
+    public IClientConnection LocalClient { get; private set; }
 
-    public HttpProtocol ProtocolType { get; }
+    public HttpProtocol ProtocolType { get; private set; }
 
-    public FlexibleRequestMethod Method { get; }
+    public FlexibleRequestMethod Method { get; private set; }
 
-    public RoutingTarget Target { get; }
+    public RoutingTarget Target { get; private set; }
 
     public string? UserAgent => this["User-Agent"];
 
@@ -83,13 +82,46 @@ public sealed class Request : IRequest
     }
 
     //private IExpressRequest InnerRequest { get; }
-    private Connection Connection { get; }
+    private Connection Connection { get; set; }
 
     #endregion
 
     #region Initialization
 
-    public Request(IServer server, Connection connection)
+    // Parameterless constructor for object pool
+    public Request2()
+    {
+        
+    }
+
+    public void Initialize(IServer server, Connection connection)
+    {
+        Server = server;
+        Connection = connection;
+        
+        // todo: Unhinged only supports Http11
+        ProtocolType = HttpProtocol.Http11;
+        
+        Method = FlexibleRequestMethod.Get(connection.H1HeaderData.HttpMethod);
+        Target = new RoutingTarget(WebPath.FromString(connection.H1HeaderData.Route));
+        
+        if (connection.H1HeaderData.Headers.TryGetValue("forwarded", out var entry))
+        {
+            _Forwardings.Add(entry);
+        }
+        else
+        {
+            _Forwardings.TryAddLegacy(Headers);
+        }
+
+        LocalClient = new ClientConnection(connection);
+
+        // todo: potential client certificate is not exposed by unhinged
+        // Unhinged does not support Tls
+        Client = _Forwardings.DetermineClient(null) ?? LocalClient;
+    }
+
+    public Request2(IServer server, Connection connection)
     {
         Server = server;
         Connection = connection;
