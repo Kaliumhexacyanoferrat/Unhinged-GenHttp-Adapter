@@ -1,7 +1,5 @@
 using System.Collections;
-using System.Diagnostics.Contracts;
 using GenHTTP.Api.Protocol;
-using Unhinged;
 
 namespace Unhinged.GenHttp.Experimental.Types;
 
@@ -54,20 +52,10 @@ public sealed class Query : IRequestQuery
             }
         }
     }
-    
-    private Connection Connection { get; }
-    
-    private PooledDictionary<string, string>? QueryParameters { get; } = null!;
 
-    #endregion
+    private Connection? Connection { get; set; }
 
-    #region Initialization
-
-    public Query(Connection connection)
-    {
-        Connection = connection;
-        QueryParameters = connection.H1HeaderData.QueryParameters;
-    }
+    private PooledDictionary<string, string>? QueryParameters { get; set; }
 
     #endregion
 
@@ -86,13 +74,10 @@ public sealed class Query : IRequestQuery
 
     IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
 
-    #endregion
-
-    #region Lifecycle
-
-    public void Dispose()
+    public void SetConnection(Connection? connection)
     {
-
+        Connection = connection;
+        QueryParameters = connection?.H1HeaderData.QueryParameters;
     }
 
     #endregion

@@ -13,10 +13,10 @@
         <RepositoryType>git</RepositoryType>
 
         <PackageId>Unhinged.GenHttp.Experimental</PackageId>
-        <AssemblyVersion>9.8.3</AssemblyVersion>
-        <FileVersion>9.8.3</FileVersion>
-        <Version>9.8.3</Version>
-        
+        <AssemblyVersion>10.1.0</AssemblyVersion>
+        <FileVersion>10.1.0</FileVersion>
+        <Version>10.1.0</Version>
+
         <PackageReadmeFile>README.md</PackageReadmeFile>
         <PackageTags>Unhinged Adapter GenHttp</PackageTags>
         <PackageLicenseFile>LICENSE</PackageLicenseFile>
@@ -28,14 +28,16 @@
     </PropertyGroup>
 
     <ItemGroup>
-        <PackageReference Include="GenHTTP.Api" Version="9.8.*" />
-        <PackageReference Include="GenHTTP.Modules.IO" Version="9.8.*" />
-        <PackageReference Include="GenHTTP.Modules.ErrorHandling" Version="9.8.*" />
-        <PackageReference Include="GenHTTP.Modules.ClientCaching" Version="9.8.*" />
-        <PackageReference Include="GenHTTP.Modules.Compression" Version="9.8.*" />
-        <PackageReference Include="GenHTTP.Engine.Shared" Version="9.8.*" />
+        <PackageReference Include="GenHTTP.Api" Version="10.1.0" />
+        <PackageReference Include="GenHTTP.Modules.IO" Version="10.1.0" />
+        <PackageReference Include="GenHTTP.Modules.ErrorHandling" Version="10.1.0" />
+        <PackageReference Include="GenHTTP.Modules.ClientCaching" Version="10.1.0" />
+        <PackageReference Include="GenHTTP.Modules.Compression" Version="10.1.0" />
+        <PackageReference Include="GenHTTP.Engine.Shared" Version="10.1.0" />
 
-        <PackageReference Include="Unhinged" Version="9.0.6" />
+        <PackageReference Include="Unhinged" Version="9.0.7" />
+
+        <PackageReference Include="Microsoft.Extensions.ObjectPool" Version="10.0.0" />
     </ItemGroup>
 
     <ItemGroup>

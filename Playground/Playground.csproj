@@ -19,15 +19,15 @@
     </ItemGroup>
 
     <ItemGroup>
-        <PackageReference Include="GenHTTP.Api" Version="9.8.*" />
-        <PackageReference Include="GenHTTP.Modules.Functional" Version="9.8.0" />
-        <PackageReference Include="GenHTTP.Modules.IO" Version="9.8.*" />
-        <PackageReference Include="GenHTTP.Modules.ErrorHandling" Version="9.8.*" />
-        <PackageReference Include="GenHTTP.Modules.ClientCaching" Version="9.8.*" />
-        <PackageReference Include="GenHTTP.Modules.Compression" Version="9.8.*" />
-        <PackageReference Include="GenHTTP.Engine.Shared" Version="9.8.*" />
-        <PackageReference Include="GenHTTP.Modules.Layouting" Version="9.8.0" />
-        <PackageReference Include="GenHTTP.Modules.Webservices" Version="9.8.0" />
+        <PackageReference Include="GenHTTP.Api" Version="10.1.0" />
+        <PackageReference Include="GenHTTP.Modules.Functional" Version="10.1.0" />
+        <PackageReference Include="GenHTTP.Modules.IO" Version="10.1.0" />
+        <PackageReference Include="GenHTTP.Modules.ErrorHandling" Version="10.1.0" />
+        <PackageReference Include="GenHTTP.Modules.ClientCaching" Version="10.1.0" />
+        <PackageReference Include="GenHTTP.Modules.Compression" Version="10.1.0" />
+        <PackageReference Include="GenHTTP.Engine.Shared" Version="10.1.0" />
+        <PackageReference Include="GenHTTP.Modules.Layouting" Version="10.1.0" />
+        <PackageReference Include="GenHTTP.Modules.Webservices" Version="10.1.0" />
     </ItemGroup>
 
 </Project>

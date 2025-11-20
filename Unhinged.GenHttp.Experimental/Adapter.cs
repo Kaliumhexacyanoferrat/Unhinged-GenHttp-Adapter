@@ -1,8 +1,10 @@
 using System.Buffers.Text;
+using System.Collections.Concurrent;
 using System.Diagnostics.Contracts;
 using GenHTTP.Api.Content;
 using GenHTTP.Api.Infrastructure;
 using GenHTTP.Api.Protocol;
+using Microsoft.Extensions.ObjectPool;
 using Unhinged.GenHttp.Experimental.Protocol;
 using Unhinged.GenHttp.Experimental.Server;
 using Unhinged.GenHttp.Experimental.Types;
@@ -13,31 +15,37 @@ namespace Unhinged.GenHttp.Experimental;
 public static class Adapter
 {
     private const int BufferSize = 8192;
-    
+
+    private static readonly DefaultObjectPool<ClientContext> ContextPool = new(new ClientContextPolicy(), 65536);
+
+    private static readonly ConcurrentDictionary<string, ImplicitServer> ServerCache = [];
+
     public static UnhingedEngine.UnhingedBuilder Map(
-        this UnhingedEngine.UnhingedBuilder builder, 
-        IHandlerBuilder handlerBuilder, 
+        this UnhingedEngine.UnhingedBuilder builder,
+        IHandlerBuilder handlerBuilder,
         IServerCompanion? companion = null)
     {
         builder.InjectRequestHandler(RequestHandler(handlerBuilder.Build(), companion));
         return builder;
     }
-    
+
     private static async ValueTask GenHttpAsyncStaticHandler(Connection connection, IHandler handler, IServerCompanion? companion)
     {
-        var server = new ImplicitServer(handler, companion);
-        
+        var server = ServerCache.GetOrAdd("/", _ => new ImplicitServer(handler, companion));
+
+        var context = ContextPool.Get();
+
         try
         {
-            using var request = new Request(server, connection);
+            context.Request.Configure(server, connection);
 
-            using var response = await handler.HandleAsync(request);
-            
+            using var response = await handler.HandleAsync(context.Request);
+
             if (response != null)
             {
                 await MapResponse(response, connection);
 
-                server.Companion?.OnRequestHandled(request, response);
+                server.Companion?.OnRequestHandled(context.Request, response);
             }
         }
         catch (Exception e)
@@ -46,13 +54,17 @@ public static class Adapter
             server.Companion?.OnServerError(ServerErrorScope.ServerConnection, null, e);
             throw;
         }
+        finally
+        {
+            ContextPool.Return(context);
+        }
     }
 
     private static async ValueTask MapResponse(IResponse response, Connection connection)
     {
         connection.WriteBuffer.WriteUnmanaged(HttpStatusLines.Lines[response.Status.RawStatus]);
         connection.WriteBuffer.WriteUnmanaged(ServerHeaderName);
-        
+
         foreach (var header in response.Headers)
         {
             connection.WriteBuffer.WriteHeaderUnmanaged(header);
@@ -80,16 +92,16 @@ public static class Adapter
                 connection.WriteBuffer.WriteHeaderUnmanaged("Set-Cookie", $"{cookie.Key}={cookie.Value.Value}");
             }
         }
-        
+
         if (response.ContentLength is not null)
         {
             connection.WriteBuffer.WriteUnmanaged(ContentLengthHeader);
-            
+
             var buffer = connection.WriteBuffer.GetSpan(16); // 16 is enough for any int in UTF-8
-            
+
             if (!Utf8Formatter.TryFormat((ulong)response.ContentLength, buffer, out var written))
                 throw new InvalidOperationException("Failed to format int");
-            
+
             connection.WriteBuffer.Advance(written);
             connection.WriteBuffer.Write("\r\n"u8);
         }
@@ -97,29 +109,29 @@ public static class Adapter
         {
             connection.WriteBuffer.WriteUnmanaged(TransferEncodingChunkedHeader);
         }
-        
+
         connection.WriteBuffer.WriteUnmanaged(DateHelper.HeaderBytes);
-        
+
         // TODO: Improve performance here, cache or something, can't be creating and disposing streams every request?
         // TODO: Maybe consider using [ThreadStatic]
-        
+
         if (response.ContentLength is null)
         {
             await using var stream = new ChunkedStream(connection.WriteBuffer.AsUnhingedStream());
             await response.Content!.WriteAsync(stream, BufferSize);
-            await stream.FinishAsync();
+            stream.Finish();
         }
         else
         {
             await response.Content!.WriteAsync(connection.WriteBuffer.AsUnhingedStream(), BufferSize);
         }
     }
-    
+
     [Pure]
     private static Func<Connection, ValueTask> RequestHandler(IHandler handler, IServerCompanion? companion) =>
         async conn => await GenHttpAsyncStaticHandler(conn, handler, companion);
-    
-    
+
+
     private static ReadOnlySpan<byte> ServerHeaderName => "Server: U\r\n"u8;
     private static ReadOnlySpan<byte> ContentTypeHeader => "Content-Type"u8;
     private static ReadOnlySpan<byte> ContentLengthHeader => "Content-Length: "u8;
@@ -130,7 +142,7 @@ public static class Adapter
     private static ReadOnlySpan<byte> ExpiresHeader => "Expires: "u8;
     private static ReadOnlySpan<byte> ConnectionHeader => "Connection: "u8;
     private static ReadOnlySpan<byte> DateHeader => "Date: "u8;
-    
+
     // Might be useful further on
     //
     /*private static void AdvanceTo(Request request, string registeredPath)

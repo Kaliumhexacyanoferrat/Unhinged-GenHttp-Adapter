@@ -1,21 +1,20 @@
 using System.Collections;
 using GenHTTP.Api.Protocol;
-using GenHTTP.Engine.Shared.Types;
-using Unhinged;
 
 namespace Unhinged.GenHttp.Experimental.Types;
 
 public sealed class Headers : IHeaderCollection
 {
+
     #region Get-/Setters
 
-    public int Count => HeadersInternal.Count;
+    public int Count => HeadersInternal?.Count ?? 0;
 
-    public bool ContainsKey(string key) => HeadersInternal.ContainsKey(key);
+    public bool ContainsKey(string key) => HeadersInternal?.ContainsKey(key) ?? false;
 
     public bool TryGetValue(string key, out string value)
     {
-        if (HeadersInternal.TryGetValue(key, out var found))
+        if (HeadersInternal?.TryGetValue(key, out var found) ?? false)
         {
             value = found;
             return true;
@@ -25,35 +24,27 @@ public sealed class Headers : IHeaderCollection
         return false;
     }
 
-    public string this[string key] => ContainsKey(key) ? HeadersInternal[key] : string.Empty;
+    public string this[string key] => ContainsKey(key) ? HeadersInternal?[key] ?? string.Empty : string.Empty;
 
-    public IEnumerable<string> Keys => HeadersInternal.Keys;
+    public IEnumerable<string> Keys => HeadersInternal?.Keys ?? Enumerable.Empty<string>();
 
     public IEnumerable<string> Values
     {
         get
         {
-            foreach (var entry in HeadersInternal)
+            if (HeadersInternal != null)
             {
-                yield return entry.Value;
+                foreach (var entry in HeadersInternal)
+                {
+                    yield return entry.Value;
+                }
             }
         }
     }
 
-    private Connection Connection { get; }
+    private Connection? Connection { get; set; }
 
-    private Unhinged.PooledDictionary<string, string> HeadersInternal { get; set; }
-
-    #endregion
-
-    #region Initialization
-
-    public Headers(Connection connection)
-    {
-        Connection = connection;
-
-        HeadersInternal = connection.H1HeaderData.Headers;
-    }
+    private PooledDictionary<string, string>? HeadersInternal { get; set; }
 
     #endregion
 
@@ -61,21 +52,21 @@ public sealed class Headers : IHeaderCollection
 
     public IEnumerator<KeyValuePair<string, string>> GetEnumerator()
     {
-        foreach (var entry in HeadersInternal)
+        if (HeadersInternal != null)
         {
-            yield return new(entry.Key, entry.Value);
+            foreach (var entry in HeadersInternal)
+            {
+                yield return new(entry.Key, entry.Value);
+            }
         }
     }
 
     IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
 
-    #endregion
-
-    #region Lifecycle
-
-    public void Dispose()
+    public void SetConnection(Connection? connection)
     {
-
+        Connection = connection;
+        HeadersInternal = connection?.H1HeaderData.Headers;
     }
 
     #endregion

@@ -1,5 +1,3 @@
-using System.Runtime.CompilerServices;
-
 namespace Unhinged.GenHttp.Experimental.Protocol;
 
 internal static class H1Parser

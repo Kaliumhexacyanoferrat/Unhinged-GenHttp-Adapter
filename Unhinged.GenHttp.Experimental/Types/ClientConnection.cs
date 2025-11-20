@@ -2,7 +2,6 @@ using System.Net;
 using System.Security.Cryptography.X509Certificates;
 using GenHTTP.Api.Infrastructure;
 using GenHTTP.Api.Protocol;
-using Unhinged;
 
 namespace Unhinged.GenHttp.Experimental.Types;
 

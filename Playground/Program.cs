@@ -1,10 +1,7 @@
-﻿using System;
-using System.Text.Json;
-using System.Threading.Tasks;
+﻿using System.Text.Json;
 using GenHTTP.Api.Content.IO;
 using GenHTTP.Api.Infrastructure;
 using GenHTTP.Api.Protocol;
-using GenHTTP.Modules.Conversion.Serializers.Json;
 using GenHTTP.Modules.Functional;
 using GenHTTP.Modules.Functional.Provider;
 using GenHTTP.Modules.IO;
@@ -30,7 +27,7 @@ internal static class Program
             .SetPort(8080)
             .SetSlabSizes(16 * 1024, 16 * 1024)
             .Map(CreateLayoutBuilder());
-        
+
         var engine = builder.Build();
         engine.Run();
     }
@@ -40,14 +37,14 @@ internal static class Program
             .Create()
             .AddService<BenchmarkService>("bench")
             .Add("/plaintext", Content.From(Resource.FromString("Hello, World!")))
-            
+
             .Add("/json", Content.From(
                 Resource.FromString(JsonSerializer.Serialize(new JsonMessage{ message = "Hello, World!" }))
                     .Type(new FlexibleContentType("application/json"))))
-  
+
             .Add("/api", CreateApi());
-    
-    private static InlineBuilder CreateApi() => 
+
+    private static InlineBuilder CreateApi() =>
         Inline
             .Create()
             .Get("plaintext", () => "Hello, World!")
