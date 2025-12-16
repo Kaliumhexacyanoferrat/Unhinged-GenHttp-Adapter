@@ -60,7 +60,7 @@ public static class Adapter
         }
     }
 
-    private static async ValueTask MapResponse(IResponse response, Connection connection)
+    private static ValueTask MapResponse(IResponse response, Connection connection)
     {
         connection.WriteBuffer.WriteUnmanaged(HttpStatusLines.Lines[response.Status.RawStatus]);
         connection.WriteBuffer.WriteUnmanaged(ServerHeaderName);
@@ -117,20 +117,24 @@ public static class Adapter
 
         if (response.ContentLength is null)
         {
-            await using var stream = new ChunkedStream(connection.WriteBuffer.AsUnhingedStream());
-            await response.Content!.WriteAsync(stream, BufferSize);
-            stream.Finish();
+            return WriteContentChunked(response, connection);
         }
-        else
-        {
-            await response.Content!.WriteAsync(connection.WriteBuffer.AsUnhingedStream(), BufferSize);
-        }
+
+        return response.Content!.WriteAsync(connection.WriteBuffer.AsUnhingedStream(), BufferSize);
+    }
+
+    private static async ValueTask WriteContentChunked(IResponse response, Connection connection)
+    {
+        await using var stream = new ChunkedStream(connection.WriteBuffer.AsUnhingedStream());
+
+        await response.Content!.WriteAsync(stream, BufferSize);
+
+        stream.Finish();
     }
 
     [Pure]
     private static Func<Connection, ValueTask> RequestHandler(IHandler handler, IServerCompanion? companion) =>
-        async conn => await GenHttpAsyncStaticHandler(conn, handler, companion);
-
+        conn => GenHttpAsyncStaticHandler(conn, handler, companion);
 
     private static ReadOnlySpan<byte> ServerHeaderName => "Server: U\r\n"u8;
     private static ReadOnlySpan<byte> ContentTypeHeader => "Content-Type"u8;
