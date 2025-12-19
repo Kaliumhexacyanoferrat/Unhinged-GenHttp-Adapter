@@ -28,16 +28,16 @@
     </PropertyGroup>
 
     <ItemGroup>
-        <PackageReference Include="GenHTTP.Api" Version="10.1.0" />
-        <PackageReference Include="GenHTTP.Modules.IO" Version="10.1.0" />
-        <PackageReference Include="GenHTTP.Modules.ErrorHandling" Version="10.1.0" />
-        <PackageReference Include="GenHTTP.Modules.ClientCaching" Version="10.1.0" />
-        <PackageReference Include="GenHTTP.Modules.Compression" Version="10.1.0" />
-        <PackageReference Include="GenHTTP.Engine.Shared" Version="10.1.0" />
+        <PackageReference Include="GenHTTP.Api" Version="10.2.0" />
+        <PackageReference Include="GenHTTP.Modules.IO" Version="10.2.0" />
+        <PackageReference Include="GenHTTP.Modules.ErrorHandling" Version="10.2.0" />
+        <PackageReference Include="GenHTTP.Modules.ClientCaching" Version="10.2.0" />
+        <PackageReference Include="GenHTTP.Modules.Compression" Version="10.2.0" />
+        <PackageReference Include="GenHTTP.Engine.Shared" Version="10.2.0" />
 
         <PackageReference Include="Unhinged" Version="9.0.7" />
 
-        <PackageReference Include="Microsoft.Extensions.ObjectPool" Version="10.0.0" />
+        <PackageReference Include="Microsoft.Extensions.ObjectPool" Version="10.0.1" />
     </ItemGroup>
 
     <ItemGroup>
